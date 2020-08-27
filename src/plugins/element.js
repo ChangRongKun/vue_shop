@@ -11,8 +11,7 @@ import {
   Main,
   Menu,
   Submenu,
-  MenuItem,
-  MenuItemGroup
+  MenuItem
 } from 'element-ui'
 
 Vue.use(Button)
@@ -26,6 +25,5 @@ Vue.use(Main)
 Vue.use(Menu)
 Vue.use(Submenu)
 Vue.use(MenuItem)
-Vue.use(MenuItemGroup)
 // $message 自定义属性
 Vue.prototype.$message = Message
