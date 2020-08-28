@@ -11,7 +11,14 @@ import {
   Main,
   Menu,
   Submenu,
-  MenuItem
+  MenuItem,
+  Breadcrumb,
+  BreadcrumbItem,
+  Card,
+  Table,
+  Row,
+  Col,
+  Pagination
 } from 'element-ui'
 
 Vue.use(Button)
@@ -25,5 +32,12 @@ Vue.use(Main)
 Vue.use(Menu)
 Vue.use(Submenu)
 Vue.use(MenuItem)
+Vue.use(Breadcrumb)
+Vue.use(BreadcrumbItem)
+Vue.use(Card)
+Vue.use(Table)
+Vue.use(Row)
+Vue.use(Col)
+Vue.use(Pagination)
 // $message 自定义属性
 Vue.prototype.$message = Message
