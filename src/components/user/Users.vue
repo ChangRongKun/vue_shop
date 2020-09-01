@@ -37,7 +37,7 @@
                          prop="role_name"></el-table-column>
         <el-table-column label="状态">
           <template slot-scope="scope">
-            <el-switch v-model="scope.row.mg_state"></el-switch>
+            <el-switch @change="userStateChange(scope.row)" v-model="scope.row.mg_state"></el-switch>
           </template>
         </el-table-column>
         <el-table-column width="180px"
@@ -106,7 +106,6 @@ export default {
       if (res.meta.status !== 200) {
         return this.$message.error('获取用户列表失败！')
       }
-      console.log(res)
       this.userList = res.data.users
       this.total = res.data.total
     },
@@ -123,6 +122,18 @@ export default {
     handleCurrentChange (newPage) {
       this.queryInfo.pagenum = newPage
       this.getUserList()
+    },
+    /**
+     * 监听switch开关 用户状态改变事件
+     */
+    async userStateChange (userInfo) {
+      console.log(userInfo)
+      const { data: res } = await this.$http.put(`users/${userInfo.id}/state/${userInfo.mg_state}`)
+      if (res.meta.status !== 200) {
+        userInfo.mg_state = !userInfo.mg_state
+        return this.$message.error('更新用户状态失败！')
+      }
+      this.$message.success('更新用户状态成功！')
     }
   }
 }
