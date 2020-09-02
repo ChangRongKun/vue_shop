@@ -12,9 +12,13 @@
       <el-row :gutter="20">
         <!-- 搜索与添加区域 -->
         <el-col :span="8">
-          <el-input placeholder="请输入内容">
+          <el-input placeholder="请输入内容"
+          v-model="queryInfo.query"
+          clearable
+          @clear="getUserList">
             <el-button slot="append"
-                       icon="el-icon-search"></el-button>
+                       icon="el-icon-search"
+                       @click="getUserList"></el-button>
           </el-input>
         </el-col>
         <!-- 添加用户区域 -->
@@ -127,7 +131,6 @@ export default {
      * 监听switch开关 用户状态改变事件
      */
     async userStateChange (userInfo) {
-      console.log(userInfo)
       const { data: res } = await this.$http.put(`users/${userInfo.id}/state/${userInfo.mg_state}`)
       if (res.meta.status !== 200) {
         userInfo.mg_state = !userInfo.mg_state
