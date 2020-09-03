@@ -8,7 +8,7 @@
     </el-breadcrumb>
 
     <!-- 卡片视图区域 -->
-    <el-card class="box-card">
+    <el-card>
       <el-row :gutter="20">
         <!-- 搜索与添加区域 -->
         <el-col :span="8">
