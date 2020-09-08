@@ -26,7 +26,7 @@
             <el-row
                 v-for="(item1,i1) in scope.row.children"
                 :key="item1.id"
-                :class="['bdbottom',i1 === 0?'bdtop':'']">
+                :class="['bdbottom',i1 === 0?'bdtop':'','vcenter']">
               <!-- 循环渲染一级权限 -->
               <el-col :span="5">
                 <el-tag>{{item1.authName}}</el-tag>
@@ -39,7 +39,7 @@
                 <el-row
                   v-for="(item2,i2) in item1.children"
                   :key="item2.id"
-                  :class="i2 ===0?'':'bdtop'">
+                  :class="[i2 ===0?'':'bdtop','vcenter']">
                   <!-- 通过for循环嵌套渲染二级权限 -->
                   <el-col :span="6">
                     <el-tag type="success">{{item2.authName}}</el-tag>
@@ -275,5 +275,10 @@ export default {
 
 .bdbottom{
   border-bottom: 1px solid #eee;
+}
+
+.vcenter{
+  display: flex;
+  align-items: center;
 }
 </style>
