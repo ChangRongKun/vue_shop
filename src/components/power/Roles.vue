@@ -80,7 +80,7 @@
                        type="danger"
                        icon="el-icon-delete"
                        @click="removeRoleById(scope.row.id)">删除</el-button>
-            <el-button size="mini" type="warning" icon="el-icon-setting">分配权限</el-button>
+            <el-button size="mini" type="warning" icon="el-icon-setting" @click="showSettingDialog">分配权限</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -147,6 +147,24 @@
                    @click="editRoleInfo">确 定</el-button>
       </span>
     </el-dialog>
+
+    <!-- 分配权限的对话框 -->
+    <el-dialog title="分配权限" :visible.sync="setRightDialogVisible" width="50%">
+       <!-- 内容主体区域 -->
+       <el-tree :data="rightsList"
+          :props="treeProps"
+          show-checkbox
+          node-key="id"
+          default-expand-all></el-tree>
+
+       <!-- 底部区域 -->
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="setRightDialogVisible = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="setRightDialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -166,7 +184,16 @@ export default {
       // 控制修改角色的对话框的展示和隐藏
       editDialogVisible: false,
       // 修改角色的表单数据
-      editForm: {}
+      editForm: {},
+      // 控制分配权限的对话框的展示或隐藏
+      setRightDialogVisible: false,
+      // 所有权限的数据
+      rightsList: [],
+      // 树形控件的属性绑定对象
+      treeProps: {
+        label: 'authName',
+        children: 'children'
+      }
     }
   },
   created () {
@@ -287,6 +314,22 @@ export default {
       }
       this.$message.success('删除权限成功！')
       role.children = res.data
+    },
+    /**
+     * 展示分配权限的对话框
+     */
+    async showSettingDialog () {
+      // 获取所有权限数据
+      const { data: res } = await this.$http.get('rights/tree')
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取权限数据失败！')
+      }
+      // 获取到的权限数据、保存到data中
+      this.rightsList = res.data
+      console.log(this.rightsList)
+
+      // 展示对话框
+      this.setRightDialogVisible = true
     }
   }
 }
