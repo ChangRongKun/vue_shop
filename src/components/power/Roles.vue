@@ -80,7 +80,7 @@
                        type="danger"
                        icon="el-icon-delete"
                        @click="removeRoleById(scope.row.id)">删除</el-button>
-            <el-button size="mini" type="warning" icon="el-icon-setting" @click="showSettingDialog">分配权限</el-button>
+            <el-button size="mini" type="warning" icon="el-icon-setting" @click="showSettingDialog(scope.row)">分配权限</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -149,13 +149,14 @@
     </el-dialog>
 
     <!-- 分配权限的对话框 -->
-    <el-dialog title="分配权限" :visible.sync="setRightDialogVisible" width="50%">
+    <el-dialog title="分配权限" :visible.sync="setRightDialogVisible" width="50%" @close="setRightDialogClosed">
        <!-- 内容主体区域 -->
        <el-tree :data="rightsList"
           :props="treeProps"
           show-checkbox
           node-key="id"
-          default-expand-all></el-tree>
+          default-expand-all
+          :default-checked-keys="defKeys"></el-tree>
 
        <!-- 底部区域 -->
       <span slot="footer"
@@ -193,7 +194,9 @@ export default {
       treeProps: {
         label: 'authName',
         children: 'children'
-      }
+      },
+      // 默认选中的节点ID值数组
+      defKeys: []
     }
   },
   created () {
@@ -318,7 +321,7 @@ export default {
     /**
      * 展示分配权限的对话框
      */
-    async showSettingDialog () {
+    async showSettingDialog (role) {
       // 获取所有权限数据
       const { data: res } = await this.$http.get('rights/tree')
       if (res.meta.status !== 200) {
@@ -326,10 +329,28 @@ export default {
       }
       // 获取到的权限数据、保存到data中
       this.rightsList = res.data
-      console.log(this.rightsList)
+
+      // 递归获取三级节点的ID
+      this.getLeafKeys(role, this.defKeys)
 
       // 展示对话框
       this.setRightDialogVisible = true
+    },
+    /**
+     * 通过递归的形式、获取角色下的所有三级权限的ID、并保存到 defKeys 数组中
+     */
+    getLeafKeys (node, arr) {
+      // 如果当前的node节点不包含children 属性、则是三级节点
+      if (!node.children) {
+        return arr.push(node.id)
+      }
+      node.children.forEach(item => this.getLeafKeys(item, arr))
+    },
+    /**
+     * 监听分配权限对话框的关闭事件
+     */
+    setRightDialogClosed () {
+      this.defKeys = []
     }
   }
 }
