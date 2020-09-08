@@ -19,7 +19,46 @@
       <!-- 角色列表区域 -->
       <el-table :data="rolesList" border stripe>
         <!-- 展开列 -->
-        <el-table-column type="expand"></el-table-column>
+        <el-table-column type="expand">
+          <!-- 通过作用域插槽进行处理 -->
+          <template slot-scope="scope">
+            <!-- 第一层循环、拿到的是一级权限 -->
+            <el-row
+                v-for="(item1,i1) in scope.row.children"
+                :key="item1.id"
+                :class="['bdbottom',i1 === 0?'bdtop':'']">
+              <!-- 循环渲染一级权限 -->
+              <el-col :span="5">
+                <el-tag>{{item1.authName}}</el-tag>
+                <i class="el-icon-caret-right"></i>
+              </el-col>
+
+              <!-- 渲染二级和三级权限 -->
+              <el-col :span="19">
+                <!-- 第二层循环、拿到的是二级权限 -->
+                <el-row
+                  v-for="(item2,i2) in item1.children"
+                  :key="item2.id"
+                  :class="i2 ===0?'':'bdtop'">
+                  <!-- 通过for循环嵌套渲染二级权限 -->
+                  <el-col :span="6">
+                    <el-tag type="success">{{item2.authName}}</el-tag>
+                    <i class="el-icon-caret-right"></i>
+                  </el-col>
+
+                  <!-- 剩下的部分是第三级权限 -->
+                  <el-col :span="18">
+                    <!-- 循环标签、展示三级权限 -->
+                    <el-tag
+                      v-for="(item3) in item2.children"
+                      :key="item3.id"
+                      type="warning">{{item3.authName}}</el-tag>
+                  </el-col>
+                  </el-row>
+              </el-col>
+            </el-row>
+          </template>
+        </el-table-column>
         <!-- 索引列 -->
         <el-table-column type="index"></el-table-column>
         <el-table-column label="角色名称" prop="roleName"></el-table-column>
@@ -226,4 +265,15 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.el-tag{
+  margin: 7px;
+}
+
+.bdtop{
+  border-top: 1px solid #eee;
+}
+
+.bdbottom{
+  border-bottom: 1px solid #eee;
+}
 </style>
