@@ -12,7 +12,7 @@
       <!-- 添加角色按钮区域 -->
       <el-row>
         <el-col>
-          <el-button type="primary">添加角色</el-button>
+          <el-button type="primary" @click="addDialogVisible = true">添加角色</el-button>
         </el-col>
       </el-row>
 
@@ -32,8 +32,38 @@
           </template>
         </el-table-column>
       </el-table>
-
     </el-card>
+
+    <!-- 添加角色的对话框 -->
+    <el-dialog title="添加角色"
+               :visible.sync="addDialogVisible"
+               width="35%"
+               @close="addDialogClosed">
+      <!-- 内容主体区域 -->
+      <el-form :model="addForm"
+               ref="addFormRef"
+               label-width="90px">
+        <!-- 用户名 -->
+        <el-form-item label="角色名称"
+                      prop="roleName"
+                      :rules="{
+                        required:true,message:'请输入角色名称',trigger:'blur'
+                      }">
+          <el-input v-model="addForm.roleName"></el-input>
+        </el-form-item>
+        <!-- 密码 -->
+        <el-form-item label="角色描述">
+          <el-input v-model="addForm.roleDesc"></el-input>
+        </el-form-item>
+      </el-form>
+      <!-- 底部区域 -->
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="addDialogVisible = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="addRole">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -41,8 +71,15 @@
 export default {
   data () {
     return {
-    // 所有角色列表数据
-      rolesList: []
+      // 所有角色列表数据
+      rolesList: [],
+      // 控制添加角色的对话框的展示和隐藏
+      addDialogVisible: false,
+      // 添加角色的表单数据
+      addForm: {
+        roleName: '',
+        roleDesc: ''
+      }
     }
   },
   created () {
@@ -58,7 +95,31 @@ export default {
         return this.$message.error('获取角色列表失败！')
       }
       this.rolesList = res.data
-      console.log(this.rolesList)
+    },
+    /**
+     * 监听添加角色对话框的关闭事件
+     */
+    addDialogClosed () {
+      this.$refs.addFormRef.resetFields()
+    },
+    /**
+     * 添加角色
+     */
+    addRole () {
+      this.$refs.addFormRef.validate(async valid => {
+        // 进行表单的预校验
+        if (!valid) return
+        // 可以发送添加角色的网络请求
+        const { data: res } = await this.$http.post('/roles', this.addForm)
+        if (res.meta.status !== 201) {
+          return this.$message.error('角色创建失败！')
+        }
+        this.$message.success('角色创建成功！')
+        // 隐藏添加角色的弹出框
+        this.addDialogVisible = false
+        // 重新获取角色列表数据
+        this.getRolesList()
+      })
     }
   }
 }
