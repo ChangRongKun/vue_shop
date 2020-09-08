@@ -30,7 +30,10 @@
                        type="primary"
                        icon="el-icon-edit"
                        @click="showEditDialog(scope.row.id)">编辑</el-button>
-            <el-button size="mini" type="danger" icon="el-icon-delete">删除</el-button>
+            <el-button size="mini"
+                       type="danger"
+                       icon="el-icon-delete"
+                       @click="removeRoleById(scope.row.id)">删除</el-button>
             <el-button size="mini" type="warning" icon="el-icon-setting">分配权限</el-button>
           </template>
         </el-table-column>
@@ -195,6 +198,28 @@ export default {
         this.getRolesList()
         this.$message.success('更新角色成功！')
       })
+    },
+    /**
+     * 根据ID删除角色
+     */
+    async removeRoleById (id) {
+      // 弹出询问用户是否删除数据
+      const confirmResult = await this.$confirm('此操作将永久删除该角色, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+      // 如果用户确认删除、则返回值是字符串、confirm
+      // 如果用户取消删除、则返回值是字符串、cancel
+      if (confirmResult !== 'confirm') {
+        return this.$message.info('已取消删除！')
+      }
+      const { data: res } = await this.$http.delete('/roles/' + id)
+      if (res.meta.status !== 200) {
+        return this.$message.error('删除角色失败！')
+      }
+      this.$message.success('删除角色成功！')
+      this.getRolesList()
     }
   }
 }
