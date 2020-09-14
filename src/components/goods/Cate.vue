@@ -67,7 +67,8 @@
                        @click="showEditCateDialog(scope.row.cat_id)">编辑</el-button>
             <el-button size="mini"
                        type="danger"
-                       icon="el-icon-delete">删除</el-button>
+                       icon="el-icon-delete"
+                       @click="removeCateById(scope.row.cat_id)">删除</el-button>
           </div>
         </template>
       </tree-table>
@@ -360,6 +361,27 @@ export default {
         this.getCateList()
         this.editCateDialogVisible = false
       })
+    },
+    /**
+     * 根据分类ID、移除数据
+     */
+    async removeCateById (id) {
+      const confirmResult = await this.$confirm('此操作将永久删除该分类，是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+      // 判断是否取消删除
+      if (confirmResult !== 'confirm') {
+        return this.$message.info('已取消删除！')
+      }
+      // 发送请求删除指定分类
+      const { data: res } = await this.$http.delete(`categories/${id}`)
+      if (res.meta.status !== 200) {
+        return this.$message.error('删除分类失败！')
+      }
+      this.$message.success('删除分类成功！')
+      this.getCateList()
     }
   },
   mounted () {
