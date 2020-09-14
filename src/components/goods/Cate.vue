@@ -59,11 +59,12 @@
                   v-else>三级</el-tag>
         </template>
         <!-- 操作 -->
-        <template slot="opt">
+        <template slot="opt" slot-scope="scope">
           <div style="width:160px">
             <el-button size="mini"
                        type="primary"
-                       icon="el-icon-edit">编辑</el-button>
+                       icon="el-icon-edit"
+                       @click="showEditCateDialog(scope.row.cat_id)">编辑</el-button>
             <el-button size="mini"
                        type="danger"
                        icon="el-icon-delete">删除</el-button>
@@ -120,6 +121,33 @@
         <el-button @click="addCateDialogVisible = false">取 消</el-button>
         <el-button type="primary"
                    @click="addCate">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- 编辑分类的对话框 -->
+    <el-dialog title="编辑分类"
+               :visible.sync="editCateDialogVisible"
+               width="50%"
+               @close="editCateDialogClosed">
+      <!-- 内容主体区域 -->
+      <el-form :model="editCateForm"
+               ref="editCateFormRef"
+               label-width="100px">
+        <!-- 分类名称 -->
+        <el-form-item label="分类名称："
+                      prop="cat_name"
+                      :rules="{
+                        required:true,message:'请输入分类名称',trigger:'blur'
+                      }">
+          <el-input v-model="editCateForm.cat_name"></el-input>
+        </el-form-item>
+      </el-form>
+      <!-- 底部区域 -->
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="editCateDialogVisible = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="editCate">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -193,7 +221,11 @@ export default {
         expandTrigger: 'hover',
         // 可以选择任意一项、父子节点可以不互相关联
         checkStrictly: true
-      }
+      },
+      // 控制编辑分类对话框的显示与隐藏
+      editCateDialogVisible: false,
+      // 修改分类的表单数据
+      editCateForm: {}
     }
   },
   created () {
@@ -294,6 +326,40 @@ export default {
       // 重置分类的表单数据对象
       this.addCateForm.cat_pid = 0
       this.addCateForm.cat_level = 0
+    },
+    /**
+     * 点击按钮、展示编辑分类的对话框
+     */
+    async showEditCateDialog (id) {
+      const { data: res } = await this.$http.get('categories/' + id)
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取分类信息失败！')
+      }
+      this.editCateForm = res.data
+      this.editCateDialogVisible = true
+    },
+    /**
+     * 监听编辑对话框的关闭事件、重置表单数据
+     */
+    editCateDialogClosed () {
+      this.$refs.editCateFormRef.resetFields()
+    },
+    /**
+     * 修改分类
+     */
+    editCate () {
+      this.$refs.editCateFormRef.validate(async valid => {
+        if (!valid) return
+        const { data: res } = await this.$http.put('categories/' + this.editCateForm.cat_id, {
+          cat_name: this.editCateForm.cat_name
+        })
+        if (res.meta.status !== 200) {
+          return this.$message.error('修改分类失败！')
+        }
+        this.$message.success('修改分类成功！')
+        this.getCateList()
+        this.editCateDialogVisible = false
+      })
     }
   },
   mounted () {
