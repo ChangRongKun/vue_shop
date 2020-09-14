@@ -27,6 +27,7 @@
            show-row-hover   鼠标悬停时，是否高亮当前行
        -->
       <tree-table
+        class="treeTable"
         :data="cateList"
         :columns="columns"
         :selection-type="false"
@@ -47,13 +48,23 @@
           <el-tag size="mini" type="warning" v-else>三级</el-tag>
         </template>
         <!-- 操作 -->
-        <template slot="opt" >
-          <el-button size="mini" type="primary" icon="el-icon-edit">编辑</el-button>
+        <template slot="opt"  >
+          <div style="width:160px">
+            <el-button size="mini" type="primary" icon="el-icon-edit">编辑</el-button>
           <el-button size="mini" type="danger" icon="el-icon-delete" >删除</el-button>
+          </div>
         </template>
       </tree-table>
       <!-- 分页区域 -->
-
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="queryInfo.pagenum"
+        :page-sizes="[3, 5, 10, 15]"
+        :page-size="queryInfo.pagesize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total">
+      </el-pagination>
     </el-card>
   </div>
 </template>
@@ -117,11 +128,28 @@ export default {
       this.cateList = res.data.result
       // 为总数居条数赋值
       this.total = res.data.total
+    },
+    /**
+     * 监听 pagesize 改变
+     */
+    handleSizeChange (newSize) {
+      console.log(newSize)
+      this.queryInfo.pagesize = newSize
+      this.getCateList()
+    },
+    /**
+     * 监听 pagenum 改变
+     */
+    handleCurrentChange (newPage) {
+      this.queryInfo.pagenum = newPage
+      this.getCateList()
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-
+.treeTable{
+  margin-top: 15px;
+}
 </style>
