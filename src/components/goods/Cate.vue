@@ -84,7 +84,8 @@
     <!-- 添加分类的对话框 -->
     <el-dialog title="添加分类"
                :visible.sync="addCateDialogVisible"
-               width="50%">
+               width="50%"
+               @close="addCateDialogClosed">
       <!-- 内容主体区域 -->
       <el-form :model="addCateForm"
                ref="addCateFormRef"
@@ -118,7 +119,7 @@
             class="dialog-footer">
         <el-button @click="addCateDialogVisible = false">取 消</el-button>
         <el-button type="primary"
-                   @click="addCateDialogVisible = false">确 定</el-button>
+                   @click="addCate">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -249,7 +250,50 @@ export default {
      * 选择项发生变化触发该函数
      */
     parentCateChange () {
-      console.log(this.selectedKeys)
+      // 如果 selectedKeys 数组中的 length 大于0、证明选中了父级分类
+      // 反之、就说明没有选中任何父级分类
+      if (this.selectedKeys.length > 0) {
+        // 父级分类的 ID
+        this.addCateForm.cat_pid = this.selectedKeys[this.selectedKeys.length - 1]
+        // 为当前分类的等级赋值
+        this.addCateForm.cat_level = this.selectedKeys.length
+      } else {
+        // 没有选中父级分类、重置父ID和等级
+        this.addCateForm.cat_pid = 0
+        this.addCateForm.cat_level = 0
+      }
+    },
+    /**
+     * 点击按钮、添加新的分类
+     * 表单预校验以及提交
+     */
+    addCate () {
+      this.$refs.addCateFormRef.validate(async valid => {
+        // 进行表单的预校验
+        if (!valid) return
+        // 可以发起网络请求修改角色
+        const { data: res } = await this.$http.post('categories', this.addCateForm)
+
+        if (res.meta.status !== 201) {
+          return this.$message.error('添加分类失败！')
+        }
+
+        this.addCateDialogVisible = false
+        this.getCateList()
+        this.$message.success('添加分类成功！')
+      })
+    },
+    /**
+     * 监听对话框的关闭事件、重置表单数据
+     */
+    addCateDialogClosed () {
+      // 重置 form 表单
+      this.$refs.addCateFormRef.resetFields()
+      // 清空父级分类的 ID 数组
+      this.selectedKeys = []
+      // 重置分类的表单数据对象
+      this.addCateForm.cat_pid = 0
+      this.addCateForm.cat_level = 0
     }
   },
   mounted () {
