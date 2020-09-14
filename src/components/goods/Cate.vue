@@ -12,7 +12,8 @@
       <el-row>
         <!-- 添加区域 -->
         <el-col>
-          <el-button type="primary" @click="showAddCateDialog">添加分类</el-button>
+          <el-button type="primary"
+                     @click="showAddCateDialog">添加分类</el-button>
         </el-col>
       </el-row>
       <!-- 表格 -->
@@ -89,13 +90,28 @@
                ref="addCateFormRef"
                label-width="100px">
         <!-- 分类名称 -->
-        <el-form-item label="分类名称：" prop="cat_name" :rules="{
+        <el-form-item label="分类名称："
+                      prop="cat_name"
+                      :rules="{
                         required:true,message:'请输入分类名称',trigger:'blur'
                       }">
           <el-input v-model="addCateForm.cat_name"></el-input>
         </el-form-item>
         <!-- 分类等级 -->
-        <el-form-item label="父级分类："></el-form-item>
+        <el-form-item label="父级分类：">
+          <!--
+            options   用来指定数据源
+            props   用来指定配置对象
+            clearable   是否支持清空选项
+          -->
+          <el-cascader v-model="selectedKeys"
+                       :options="parentCateList"
+                       :props="cascaderProps"
+                       @change="parentCateChange"
+                       clearable
+                       >
+          </el-cascader>
+        </el-form-item>
       </el-form>
       <!-- 底部区域 -->
       <span slot="footer"
@@ -159,6 +175,23 @@ export default {
         cat_name: '',
         // 分类的等级、默认添加一级分类
         cat_level: 0
+      },
+      // 父级分类的数据列表
+      parentCateList: [],
+      // 选中的父级分类的 ID 数组
+      selectedKeys: [],
+      // 指定级联选择器的配置对象
+      cascaderProps: {
+        // 指定选项标签为选项对象的某个属性值
+        label: 'cat_name',
+        // 指定选项的值为选项对象的某个属性值
+        value: 'cat_id',
+        // 指定选项的子选项为选项对象的某个属性值
+        children: 'children',
+        // 次级菜单的展开方式
+        expandTrigger: 'hover',
+        // 可以选择任意一项、父子节点可以不互相关联
+        checkStrictly: true
       }
     }
   },
@@ -197,8 +230,39 @@ export default {
      * 点击按钮、展示添加分类的对话框
      */
     showAddCateDialog () {
+      // 先获取父级分类的数据列表
+      this.getParentCateList()
+      // 再展示出对话框
       this.addCateDialogVisible = true
+    },
+    /**
+     * 获取父级分类的数据列表
+     */
+    async getParentCateList () {
+      const { data: res } = await this.$http.get('categories', { params: { type: 2 } })
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取父级分类数据失败！')
+      }
+      this.parentCateList = res.data
+    },
+    /**
+     * 选择项发生变化触发该函数
+     */
+    parentCateChange () {
+      console.log(this.selectedKeys)
     }
+  },
+  mounted () {
+    /**
+     * span上手动注册组件去调用radio的事件
+     */
+    setInterval(function () {
+      document.querySelectorAll('.el-cascader-node__label').forEach(el => {
+        el.onclick = function () {
+          if (this.previousElementSibling) this.previousElementSibling.click()
+        }
+      })
+    }, 1000)
   }
 }
 </script>
@@ -206,5 +270,9 @@ export default {
 <style lang="less" scoped>
 .treeTable {
   margin-top: 15px;
+}
+
+.el-cascader{
+  width:100%;
 }
 </style>
