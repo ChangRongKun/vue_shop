@@ -40,14 +40,15 @@
 
         <!-- 添加动态参数的面板 -->
         <el-tab-pane label="动态参数"
-                     name="first">
+                     name="many">
           <!-- 添加参数的按钮 -->
           <el-button type="primary" size="mini" :disabled="isBtnDisable">添加参数</el-button>
+
         </el-tab-pane>
 
         <!-- 添加静态属性的面板 -->
         <el-tab-pane label="静态属性"
-                     name="second">
+                     name="only">
           <!-- 添加属性的按钮 -->
           <el-button type="primary" size="mini" :disabled="isBtnDisable">添加属性</el-button>
         </el-tab-pane>
@@ -74,7 +75,11 @@ export default {
       // 级联选择框双向绑定到的数组
       selectedCateKeys: [],
       // 被激活的页签名称
-      activeName: 'first'
+      activeName: 'many',
+      // 动态参数的数据
+      manyTableData: [],
+      // 静态参数的数据
+      onlyTableData: []
     }
   },
   created () {
@@ -98,13 +103,31 @@ export default {
       // 证明选中的不是三级分类
       if (this.selectedCateKeys.length < 3) {
         this.selectedCateKeys = []
+        return
       }
+      // 证明选择了三级分类、
+      this.getParamsData()
     },
     /**
      * Tab页签的点击事件对应的函数
      */
     handleTabClick () {
-      console.log(this.activeName)
+      this.cateChange()
+    },
+    /**
+     * 根据所选分类的ID和当前所处的面板、获取对应的参数列表数据
+     */
+    async getParamsData () {
+      const { data: res } = await this.$http.get(`categories/${this.cateId}/attributes`, { params: { sel: this.activeName } })
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取分类参数列表失败！')
+      }
+      console.log(res.data)
+      if (this.activeName === 'many') {
+        this.manyTableData = res.data
+      } else {
+        this.onlyTableData = res.data
+      }
     }
   },
   computed: {
@@ -117,6 +140,16 @@ export default {
         return true
       }
       return false
+    },
+    /**
+     * 当前选中的三级分类ID
+     * 返回值为 null 、证明不是三级分类
+     */
+    cateId () {
+      if (this.selectedCateKeys.length === 3) {
+        return this.selectedCateKeys[2]
+      }
+      return null
     }
   }
 }
