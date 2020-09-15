@@ -29,7 +29,9 @@ import {
   Select,
   Option,
   Cascader,
-  Alert
+  Alert,
+  Tabs,
+  TabPane
 } from 'element-ui'
 
 Vue.use(Button)
@@ -60,6 +62,8 @@ Vue.use(Select)
 Vue.use(Option)
 Vue.use(Cascader)
 Vue.use(Alert)
+Vue.use(Tabs)
+Vue.use(TabPane)
 // $message 自定义属性
 Vue.prototype.$message = Message
 // $confirm 自定义属性
