@@ -41,16 +41,53 @@
         <!-- 添加动态参数的面板 -->
         <el-tab-pane label="动态参数"
                      name="many">
+
           <!-- 添加参数的按钮 -->
           <el-button type="primary" size="mini" :disabled="isBtnDisable">添加参数</el-button>
+
+          <!-- 动态参数表格 -->
+          <el-table :data="manyTableData"
+                    border
+                    stripe>
+            <!-- 展开行 -->
+            <el-table-column type="expand"></el-table-column>
+            <!-- 索引列 -->
+            <el-table-column type="index" label="#"></el-table-column>
+            <el-table-column label="参数名称" prop="attr_name"></el-table-column>
+            <el-table-column label="操作">
+              <template >
+                <el-button type="primary" size="mini" icon="el-icon-edit">编辑</el-button>
+                <el-button type="danger" size="mini" icon="el-icon-delete">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
 
         </el-tab-pane>
 
         <!-- 添加静态属性的面板 -->
         <el-tab-pane label="静态属性"
                      name="only">
+
           <!-- 添加属性的按钮 -->
           <el-button type="primary" size="mini" :disabled="isBtnDisable">添加属性</el-button>
+
+          <!-- 静态属性表格 -->
+          <el-table :data="onlyTableData"
+                    border
+                    stripe>
+            <!-- 展开行 -->
+            <el-table-column type="expand"></el-table-column>
+            <!-- 索引列 -->
+            <el-table-column type="index" label="#"></el-table-column>
+            <el-table-column label="属性名称" prop="attr_name"></el-table-column>
+            <el-table-column label="操作">
+              <template >
+                <el-button type="primary" size="mini" icon="el-icon-edit">编辑</el-button>
+                <el-button type="danger" size="mini" icon="el-icon-delete">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+
         </el-tab-pane>
 
       </el-tabs>
