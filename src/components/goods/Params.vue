@@ -307,7 +307,25 @@ export default {
     /**
      * 点击按钮、修改参数信息
      */
-    editParams () { }
+    editParams () {
+      this.$refs.editParamFormRef.validate(async valid => {
+        // 预校验
+        if (!valid) return
+        // 发送请求
+        const { data: res } = await this.$http.put(`categories/${this.cateId}/attributes/${this.editParamForm.attr_id}`, {
+          attr_name: this.editParamForm.attr_name,
+          attr_sel: this.activeName
+        })
+
+        if (res.meta.status !== 200) {
+          return this.$message.error('修改参数失败！')
+        }
+
+        this.$message.success('修改参数成功！')
+        this.getParamsData()
+        this.editParamDialogVisible = false
+      })
+    }
   },
   computed: {
     /**
