@@ -43,7 +43,7 @@
                      name="many">
 
           <!-- 添加参数的按钮 -->
-          <el-button type="primary" size="mini" :disabled="isBtnDisable">添加参数</el-button>
+          <el-button type="primary" size="mini" :disabled="isBtnDisable" @click="addParamDialogVisible = true">添加参数</el-button>
 
           <!-- 动态参数表格 -->
           <el-table :data="manyTableData"
@@ -69,7 +69,7 @@
                      name="only">
 
           <!-- 添加属性的按钮 -->
-          <el-button type="primary" size="mini" :disabled="isBtnDisable">添加属性</el-button>
+          <el-button type="primary" size="mini" :disabled="isBtnDisable" @click="addParamDialogVisible = true">添加属性</el-button>
 
           <!-- 静态属性表格 -->
           <el-table :data="onlyTableData"
@@ -92,6 +92,34 @@
 
       </el-tabs>
     </el-card>
+
+    <!-- 添加参数的对话框 -->
+    <el-dialog :title="'添加'+titleText"
+               :visible.sync="addParamDialogVisible"
+               width="50%"
+               @close="addFormDialogClosed">
+      <!-- 内容主体区域 -->
+      <el-form :model="addParamForm"
+               ref="addParamFormRef"
+               label-width="100px">
+        <!-- 添加参数 -->
+        <el-form-item :label="titleText"
+                      prop="attr_name"
+                      :rules="{
+                        required:true,message:'请输入要添加的信息',trigger:'blur'
+                      }">
+          <el-input v-model="addParamForm.attr_name"></el-input>
+        </el-form-item>
+      </el-form>
+      <!-- 底部区域 -->
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="addParamDialogVisible = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="addParamDialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -116,7 +144,13 @@ export default {
       // 动态参数的数据
       manyTableData: [],
       // 静态参数的数据
-      onlyTableData: []
+      onlyTableData: [],
+      // 控制添加对话框的显示与隐藏
+      addParamDialogVisible: false,
+      // 添加参数的表单数据对象
+      addParamForm: {
+        attr_name: ''
+      }
     }
   },
   created () {
@@ -165,6 +199,12 @@ export default {
       } else {
         this.onlyTableData = res.data
       }
+    },
+    /**
+     * 监听添加对话框的关闭事件
+     */
+    addFormDialogClosed () {
+      this.$refs.addParamFormRef.resetFields()
     }
   },
   computed: {
@@ -187,6 +227,15 @@ export default {
         return this.selectedCateKeys[2]
       }
       return null
+    },
+    /**
+     * 动态计算弹出框标题的文本
+     */
+    titleText () {
+      if (this.activeName === 'many') {
+        return '动态参数'
+      }
+      return '静态属性'
     }
   }
 }
