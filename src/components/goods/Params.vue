@@ -116,7 +116,7 @@
             class="dialog-footer">
         <el-button @click="addParamDialogVisible = false">取 消</el-button>
         <el-button type="primary"
-                   @click="addParamDialogVisible = false">确 定</el-button>
+                   @click="addParams">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -205,6 +205,27 @@ export default {
      */
     addFormDialogClosed () {
       this.$refs.addParamFormRef.resetFields()
+    },
+    /**
+     * 点击按钮、添加参数
+     */
+    addParams () {
+      this.$refs.addParamFormRef.validate(async valid => {
+        if (!valid) return
+        // 发送请求
+        const { data: res } = await this.$http.post(`categories/${this.cateId}/attributes`, {
+          attr_name: this.addParamForm.attr_name,
+          attr_sel: this.activeName
+        })
+
+        if (res.meta.status !== 201) {
+          return this.$message.error('添加参数失败！')
+        }
+
+        this.$message.success('添加参数成功！')
+        this.addParamDialogVisible = false
+        this.getParamsData()
+      })
     }
   },
   computed: {
