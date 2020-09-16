@@ -13,9 +13,13 @@
       <el-row :gutter="20">
         <el-col :span="8">
           <!-- 搜索的文本输入框 -->
-          <el-input placeholder="请输入内容">
+          <el-input placeholder="请输入内容"
+                    v-model="queryInfo.query"
+                    clearable
+                    @clear="getGoodsList">
             <el-button slot="append"
-                       icon="el-icon-search"></el-button>
+                       icon="el-icon-search"
+                       @click="getGoodsList"></el-button>
           </el-input>
         </el-col>
         <el-col :span="4">
