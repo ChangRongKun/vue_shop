@@ -19,11 +19,15 @@
 
       <!-- 步骤条区域 -->
       <el-steps :space="200"
-                :active="1"
+                :active="activeIndex"
+                align-center
                 finish-status="success">
-        <el-step title="已完成"></el-step>
-        <el-step title="进行中"></el-step>
-        <el-step title="步骤 3"></el-step>
+        <el-step title="基本信息"></el-step>
+        <el-step title="商品参数"></el-step>
+        <el-step title="商品属性"></el-step>
+        <el-step title="商品图片"></el-step>
+        <el-step title="商品内容"></el-step>
+        <el-step title="完成"></el-step>
       </el-steps>
     </el-card>
   </div>
@@ -33,7 +37,7 @@
 export default {
   data () {
     return {
-
+      activeIndex: 0
     }
   },
   created () {
