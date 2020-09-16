@@ -32,19 +32,32 @@
                 border
                 stripe>
         <!-- 索引列 -->
-        <el-table-column type="index" label="#"></el-table-column>
-        <el-table-column label="商品名称" prop="goods_name"></el-table-column>
-        <el-table-column label="商品价格(元)" prop="goods_price" width="80px"></el-table-column>
-        <el-table-column label="商品重量" prop="goods_weight" width="70px"></el-table-column>
-        <el-table-column label="创建时间" width="140px">
+        <el-table-column type="index"
+                         label="#"></el-table-column>
+        <el-table-column label="商品名称"
+                         prop="goods_name"></el-table-column>
+        <el-table-column label="商品价格(元)"
+                         prop="goods_price"
+                         width="80px"></el-table-column>
+        <el-table-column label="商品重量"
+                         prop="goods_weight"
+                         width="70px"></el-table-column>
+        <el-table-column label="创建时间"
+                         width="140px">
           <template slot-scope="scope">
-              {{scope.row.add_time | dateFormat}}
+            {{scope.row.add_time | dateFormat}}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="180px">
-          <template>
-            <el-button type="primary" size="mini" icon=el-icon-edit>编辑</el-button>
-            <el-button type="danger" size="mini" icon=el-icon-delete>删除</el-button>
+        <el-table-column label="操作"
+                         width="180px">
+          <template slot-scope="scope">
+            <el-button type="primary"
+                       size="mini"
+                       icon=el-icon-edit>编辑</el-button>
+            <el-button type="danger"
+                       size="mini"
+                       icon=el-icon-delete
+                       @click="removeGoodsById(scope.row.goods_id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -108,6 +121,29 @@ export default {
      */
     handleCurrentChange (newPage) {
       this.queryInfo.pagenum = newPage
+      this.getGoodsList()
+    },
+    /**
+     * 根据Id删除商品
+     */
+    async removeGoodsById (goodsId) {
+      const confirmResult = await this.$confirm('此操作将永久删除该商品, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+
+      if (confirmResult !== 'confirm') {
+        return this.$message.info('已取消删除！')
+      }
+
+      const { data: res } = await this.$http.delete(`goods/${goodsId}`)
+
+      if (res.meta.status !== 200) {
+        return this.$message.error('删除商品失败！')
+      }
+
+      this.$message.success('删除商品成功！')
       this.getGoodsList()
     }
   }
