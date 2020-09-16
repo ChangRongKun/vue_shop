@@ -53,7 +53,11 @@
                     border
                     stripe>
             <!-- 展开行 -->
-            <el-table-column type="expand"></el-table-column>
+            <el-table-column type="expand">
+              <template slot-scope="scope">
+                <el-tag v-for="(item,index) in scope.row.attr_vals" :key="index" closable>{{item}}</el-tag>
+              </template>
+            </el-table-column>
             <!-- 索引列 -->
             <el-table-column type="index"
                              label="#"></el-table-column>
@@ -90,7 +94,11 @@
                     border
                     stripe>
             <!-- 展开行 -->
-            <el-table-column type="expand"></el-table-column>
+            <el-table-column type="expand">
+              <template slot-scope="scope">
+                <el-tag v-for="(item,index) in scope.row.attr_vals" :key="index" closable>{{item}}</el-tag>
+              </template>
+            </el-table-column>
             <!-- 索引列 -->
             <el-table-column type="index"
                              label="#"></el-table-column>
@@ -251,6 +259,11 @@ export default {
         return this.$message.error('获取分类参数列表失败！')
       }
 
+      res.data.forEach(item => {
+        // 值不为空才进行分割字符串、否则设置为空数组
+        item.attr_vals = item.attr_vals ? item.attr_vals.split(' ') : []
+      })
+
       if (this.activeName === 'many') {
         this.manyTableData = res.data
       } else {
@@ -389,5 +402,9 @@ export default {
 <style lang="less" scoped>
 .cat_opt {
   margin: 15px 0px;
+}
+
+.el-tag{
+  margin: 10px;
 }
 </style>
