@@ -121,7 +121,8 @@
                 <!-- 循环渲染tag标签 -->
                 <el-tag v-for="(item,index) in scope.row.attr_vals"
                         :key="index"
-                        closable>{{item}}</el-tag>
+                        closable
+                        @close="handleClose(index,scope.row)">{{item}}</el-tag>
 
                 <!-- 输入的文本框 -->
                 <el-input class="input-new-tag"
