@@ -37,7 +37,8 @@
                label-position="top">
         <!-- tab栏区域 -->
         <el-tabs v-model="activeIndex"
-                 :tab-position="'left'">
+                 :tab-position="'left'"
+                 :before-leave="beforeTabLeave">
 
           <!-- 基本信息        -->
           <el-tab-pane label="基本信息"
@@ -166,6 +167,17 @@ export default {
       // 不是第三级分类的话、清空数据
       if (this.addForm.goods_cat.length !== 3) {
         this.addForm.goods_cat = []
+      }
+    },
+    /**
+     * 阻止标签页的切换
+     */
+    beforeTabLeave (activeName, oldActiveName) {
+      // console.log('即将离开的标签页是：' + oldActiveName)
+      // console.log('即将进入的标签页是：' + activeName)
+      if (oldActiveName === '0' && this.addForm.goods_cat.length !== 3) {
+        this.$message.error('请先选择商品分类！')
+        return false
       }
     }
   }
