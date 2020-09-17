@@ -117,19 +117,19 @@ export default {
         ],
         // 商品价格的校验规则
         goods_price: [
-          { required: true, message: '请输入商品价格', triggger: 'blur' }
+          { required: true, message: '请输入商品价格' }
         ],
         // 商品数量的校验规则
         goods_number: [
-          { required: true, message: '请输入商品数量', triggger: 'blur' }
+          { required: true, message: '请输入商品数量' }
         ],
         // 商品重量的校验规则
         goods_weight: [
-          { required: true, message: '请输入商品重量', triggger: 'blur' }
+          { required: true, message: '请输入商品重量' }
         ],
         // 商品所属分类的校验规则
         goods_cat: [
-          { required: true, message: '请选择商品分类', triggger: 'blur' }
+          { type: 'array', required: true, message: '请选择商品分类', triggger: 'change' }
         ]
       },
       // 获取的商品分类数据
@@ -160,8 +160,8 @@ export default {
       this.cateList = res.data
     },
     /**
-     * 商品分类级联选择器选中项发生变化、会触发的函数
-     */
+   * 商品分类级联选择器选中项发生变化、会触发的函数
+   */
     cateHandleChange () {
       // 不是第三级分类的话、清空数据
       if (this.addForm.goods_cat.length !== 3) {
