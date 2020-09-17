@@ -120,7 +120,14 @@
 
           <!-- 商品内容 -->
           <el-tab-pane label="商品内容"
-                       name="4">商品内容</el-tab-pane>
+                       name="4">
+            <!-- 富文本编辑器组件 -->
+            <quill-editor v-model="addForm.goods_introduce"></quill-editor>
+
+            <!-- 添加商品的按钮 -->
+            <el-button type="primary"
+                       class="btnAdd">添加商品</el-button>
+          </el-tab-pane>
         </el-tabs>
       </el-form>
     </el-card>
@@ -154,7 +161,9 @@ export default {
         // 商品所属的分类数组
         goods_cat: [],
         // 图片的数组
-        pics: []
+        pics: [],
+        // 商品的详情描述
+        goods_introduce: ''
       },
       // 添加商品表单的验证规则
       addFormRules: {
@@ -330,5 +339,9 @@ export default {
 
 .previewImg {
   width: 100%;
+}
+
+.btnAdd {
+  margin-top: 15px;
 }
 </style>
