@@ -38,7 +38,8 @@
         <!-- tab栏区域 -->
         <el-tabs v-model="activeIndex"
                  :tab-position="'left'"
-                 :before-leave="beforeTabLeave">
+                 :before-leave="beforeTabLeave"
+                 @tab-click="tabClicked">
 
           <!-- 基本信息        -->
           <el-tab-pane label="基本信息"
@@ -70,7 +71,20 @@
 
           <!-- 商品参数 -->
           <el-tab-pane label="商品参数"
-                       name="1">商品参数</el-tab-pane>
+                       name="1">
+            <!-- 渲染表单的Item项 -->
+            <el-form-item :label="item.attr_name"
+                          v-for=" item in manyTableData"
+                          :key="item.attr_id">
+              <!-- 复选框组 -->
+              <el-checkbox-group v-model="item.attr_vals">
+                <el-checkbox :label="val"
+                             v-for="(val,i) in item.attr_vals"
+                             :key="i"
+                             border></el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+          </el-tab-pane>
 
           <!-- 商品属性 -->
           <el-tab-pane label="商品属性"
@@ -138,7 +152,9 @@ export default {
         value: 'cat_id',
         children: 'children',
         expandTrigger: 'hover'
-      }
+      },
+      // 获取的商品参数列表数据
+      manyTableData: []
     }
   },
   created () {
@@ -176,10 +192,47 @@ export default {
         this.$message.error('请先选择商品分类！')
         return false
       }
+    },
+    /**
+     * 切换tab标签触发的事件
+     */
+    async tabClicked () {
+      // activeIndex 为 1 、证明访问的是动态参数面板
+      if (this.activeIndex === '1') {
+        const { data: res } = await this.$http.get(`categories/${this.cateId}/attributes`, {
+          params: {
+            sel: 'many'
+          }
+        })
+
+        if (res.meta.status !== 200) {
+          return this.$message.error('获取商品参数失败！')
+        }
+
+        console.log(res.data)
+        res.data.forEach(item => {
+          item.attr_vals = item.attr_vals.length === 0 ? 0 : item.attr_vals.split(' ')
+        })
+        this.manyTableData = res.data
+      }
+    }
+  },
+  computed: {
+    /**
+     * 通过计算属性、获取商品的三级分类ID
+     */
+    cateId () {
+      if (this.addForm.goods_cat.length === 3) {
+        return this.addForm.goods_cat[2]
+      }
+      return null
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
+.el-checkbox {
+  margin: 0 10px 0 0 !important;
+}
 </style>
