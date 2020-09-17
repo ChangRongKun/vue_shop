@@ -49,18 +49,15 @@
             </el-form-item>
             <el-form-item label="商品价格"
                           prop="goods_price">
-              <el-input v-model="addForm.goods_price"
-                        type="number"></el-input>
+              <el-input v-model.number="addForm.goods_price"></el-input>
             </el-form-item>
             <el-form-item label="商品数量"
                           prop="goods_number">
-              <el-input v-model="addForm.goods_number"
-                        type="number"></el-input>
+              <el-input v-model.number="addForm.goods_number"></el-input>
             </el-form-item>
             <el-form-item label="商品重量"
                           prop="goods_weight">
-              <el-input v-model="addForm.goods_weight"
-                        type="number"></el-input>
+              <el-input v-model.number="addForm.goods_weight"></el-input>
             </el-form-item>
             <el-form-item label="商品分类"
                           prop="goods_cat">
@@ -118,15 +115,15 @@ export default {
         ],
         // 商品价格的校验规则
         goods_price: [
-          { required: true, message: '请输入商品价格' }
+          { type: 'number', required: true, message: '请输入商品价格', triggger: 'blur' }
         ],
         // 商品数量的校验规则
         goods_number: [
-          { required: true, message: '请输入商品数量' }
+          { type: 'number', required: true, message: '请输入商品数量', triggger: 'blur' }
         ],
         // 商品重量的校验规则
         goods_weight: [
-          { required: true, message: '请输入商品重量' }
+          { type: 'number', required: true, message: '请输入商品重量', triggger: 'blur' }
         ],
         // 商品所属分类的校验规则
         goods_cat: [
