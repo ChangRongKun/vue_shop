@@ -124,6 +124,15 @@
         </el-tabs>
       </el-form>
     </el-card>
+
+    <!-- 图片预览 -->
+    <el-dialog title="图片预览"
+               :visible.sync="previewVisible"
+               width="50%">
+      <img :src="previewPath"
+           alt="预览的图片"
+           class="previewImg">
+    </el-dialog>
   </div>
 </template>
 
@@ -188,7 +197,11 @@ export default {
       // 图片上传组件的 headers 请求头对象
       headerObj: {
         Authorization: window.sessionStorage.getItem('token')
-      }
+      },
+      // 要预览图片的路径
+      previewPath: '',
+      // 控制预览图片的弹出框的显示与隐藏
+      previewVisible: false
     }
   },
   created () {
@@ -267,7 +280,10 @@ export default {
     /**
      * 处理图片的预览效果
      */
-    handlePreview () { },
+    handlePreview (file) {
+      this.previewPath = file.response.data.url
+      this.previewVisible = true
+    },
     /**
      * 处理移除图片的触发事件
      */
@@ -310,5 +326,9 @@ export default {
 <style lang="less" scoped>
 .el-checkbox {
   margin: 0 10px 0 0 !important;
+}
+
+.previewImg {
+  width: 100%;
 }
 </style>
