@@ -98,7 +98,25 @@
 
           <!-- 商品图片 -->
           <el-tab-pane label="商品图片"
-                       name="3">商品图片</el-tab-pane>
+                       name="3">
+            <!--
+              action   表示图片要上传到的后台的API地址
+              on-preview    点击文件列表中已上传的文件时的钩子
+              on-remove  文件列表移除文件时的钩子
+              list-type  文件列表的类型
+              headers    设置上传的请求头部
+              on-success  文件上传成功时的钩子
+            -->
+            <el-upload :action="uploadURL"
+                       :on-preview="handlePreview"
+                       :on-remove="handleRemove"
+                       list-type="picture"
+                       :headers="headerObj"
+                       :on-success="handleSuccess">
+              <el-button size="small"
+                         type="primary">点击上传</el-button>
+            </el-upload>
+          </el-tab-pane>
 
           <!-- 商品内容 -->
           <el-tab-pane label="商品内容"
@@ -125,7 +143,9 @@ export default {
         // 商品重量
         goods_weight: 0,
         // 商品所属的分类数组
-        goods_cat: []
+        goods_cat: [],
+        // 图片的数组
+        pics: []
       },
       // 添加商品表单的验证规则
       addFormRules: {
@@ -162,7 +182,13 @@ export default {
       // 获取的动态参数列表数据
       manyTableData: [],
       // 获取的静态属性列表数据
-      onlyTableData: []
+      onlyTableData: [],
+      // 上传图片的 URL 地址
+      uploadURL: 'http://127.0.0.1:8888/api/private/v1/upload/',
+      // 图片上传组件的 headers 请求头对象
+      headerObj: {
+        Authorization: window.sessionStorage.getItem('token')
+      }
     }
   },
   created () {
@@ -237,6 +263,34 @@ export default {
 
         this.onlyTableData = res.data
       }
+    },
+    /**
+     * 处理图片的预览效果
+     */
+    handlePreview () { },
+    /**
+     * 处理移除图片的触发事件
+     */
+    handleRemove (file) {
+      // 1、获取要移除的图片的临时路径
+      const filePath = file.response.data.tmp_path
+      // 2、从 pics 数组中、找到这个图片对应的索引值
+      const i = this.addForm.pics.findIndex(x =>
+        x.pic === filePath
+      )
+      // 3、调用数组中的 splice 方法、把图片信息对象、从 pics 数组中移除
+      this.addForm.pics.splice(i, 1)
+    },
+    /**
+     * 处理上传图片成功的触发事件
+     */
+    handleSuccess (response) {
+      // 1、拼接得到一个图片信息对象
+      const picInfo = {
+        pic: response.data.tmp_path
+      }
+      // 2、将图片信息对象、push到pics数组中
+      this.addForm.pics.push(picInfo)
     }
   },
   computed: {
