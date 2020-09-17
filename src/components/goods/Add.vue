@@ -126,7 +126,8 @@
 
             <!-- 添加商品的按钮 -->
             <el-button type="primary"
-                       class="btnAdd">添加商品</el-button>
+                       class="btnAdd"
+                       @click="add">添加商品</el-button>
           </el-tab-pane>
         </el-tabs>
       </el-form>
@@ -144,6 +145,8 @@
 </template>
 
 <script>
+import _ from 'lodash'
+
 export default {
   data () {
     return {
@@ -163,7 +166,9 @@ export default {
         // 图片的数组
         pics: [],
         // 商品的详情描述
-        goods_introduce: ''
+        goods_introduce: '',
+        // 商品的参数（数组），包含 `动态参数` 和 `静态属性`
+        attrs: []
       },
       // 添加商品表单的验证规则
       addFormRules: {
@@ -316,6 +321,49 @@ export default {
       }
       // 2、将图片信息对象、push到pics数组中
       this.addForm.pics.push(picInfo)
+    },
+    /**
+     * 添加商品
+     */
+    add () {
+      this.$refs.addFormRef.validate(async valid => {
+        if (!valid) {
+          return this.$message.error('请填写必须的表单项！')
+        }
+        // 预校验通过、可以执行添加的业务逻辑
+        // 处理动态参数
+        this.manyTableData.forEach(item => {
+          const newInfo = {
+            attr_id: item.attr_id,
+            attr_value: item.attr_vals.join(' ')
+          }
+          this.addForm.attrs.push(newInfo)
+        })
+        // 处理静态属性
+        this.onlyTableData.forEach(item => {
+          const newInfo = {
+            attr_id: item.attr_id,
+            attr_value: item.attr_vals
+          }
+          this.addForm.attrs.push(newInfo)
+        })
+
+        // lodash  cloneDeep(obj) 进行深拷贝
+        const form = _.cloneDeep(this.addForm)
+        form.goods_cat = form.goods_cat.join(',')
+
+        // 发起请求、添加商品
+        // 商品的名称、必须是唯一的
+        const { data: res } = await this.$http.post('goods', form)
+
+        if (res.meta.status !== 201) {
+          return this.$message.error('添加商品失败！')
+        }
+
+        this.$message.success('添加商品成功！')
+
+        this.$router.push('/goods')
+      })
     }
   },
   computed: {
