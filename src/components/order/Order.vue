@@ -64,7 +64,8 @@
                        @click="showBox"></el-button>
             <el-button type="success"
                        size="mini"
-                       icon="el-icon-location"></el-button>
+                       icon="el-icon-location"
+                       @click="showProgressBox"></el-button>
           </template>
         </el-table-column>
 
@@ -111,6 +112,32 @@
       </span>
     </el-dialog>
 
+    <!-- 展示物流进度的对话框 -->
+    <el-dialog title="物流进度"
+               :visible.sync="progressDialogVisible"
+               width="50%"
+               class="abow_dialog"
+               @close="progressDialogClosed">
+
+      <div style="height:500px;overflow-y:auto">
+        <el-timeline>
+          <el-timeline-item v-for="(activity,index) in progressInfo"
+                            :key="index"
+                            :timestamp="activity.time"
+                            placement="top">
+            {{activity.context}}
+          </el-timeline-item>
+        </el-timeline>
+      </div>
+
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="progressDialogVisible = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="progressDialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -148,7 +175,11 @@ export default {
         ]
       },
       // 城市信息
-      cityData
+      cityData,
+      // 控制物流进度的对话框的显示或隐藏
+      progressDialogVisible: false,
+      // 获取的物流进度列表
+      progressInfo: []
     }
   },
   created () {
@@ -194,7 +225,25 @@ export default {
      */
     addressDialogClosed () {
       this.$refs.addressFormRef.resetFields()
-    }
+    },
+    /**
+     * 展示物流信息的对话框
+     */
+    async showProgressBox () {
+      const { data: res } = await this.$http.get('/kuaidi/1106975712662')
+
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取物流进度失败！')
+      }
+
+      this.progressInfo = res.data
+
+      this.progressDialogVisible = true
+    },
+    /**
+     * 监听关闭物流进度的对话框
+     */
+    progressDialogClosed () { }
   }
 }
 </script>
